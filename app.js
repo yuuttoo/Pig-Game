@@ -9,13 +9,102 @@ GAME RULES:
 
 */
 
-//找出變數
-var scores, roundScore, activePlayer, dice;
+//列出變數
 
-scores = [0, 0];
-roundScore = 0;
-activePlayer = 0;
+var scores, roundScore, activePlayer, gamePlaying;
+ 
+init();
+
+//按下roll開始擲骰子
+document.querySelector('.btn-roll').addEventListener('click', function(){
+if(gamePlaying) {
+    // 1 亂數
+var dice = Math.floor(Math.random() * 6) + 1;
+//2 展示結果 先抓出diceDOM 跟著1的結果變換骰子點數
+var diceDOM = document.querySelector('.dice');
+diceDOM.style.display = 'block';
+diceDOM.src = 'dice-' + dice + '.png';
+//3 更新每回合積分 
+if(dice !== 1) {
+//加分
+    roundScore += dice;
+    document.querySelector('#current-' + activePlayer).textContent = roundScore;
+} else {
+    //Next player
+    nextPlayer();
+}
+
+}
 
 
-dice = Math.floor(Math.floor.random()*6) +1;
-console.log(dice);
+});
+
+document.querySelector('.btn-hold').addEventListener('click', function() {
+    if(gamePlaying) {
+        //Add current score to global score
+    scores[activePlayer] = scores[activePlayer] + roundScore;
+
+    //update the ui
+    document.querySelector('#score-' + activePlayer).textContent = scores[activePlayer];
+    //check if player won the game
+    if(scores[activePlayer] >= 100) {
+       document.querySelector('#name-' + activePlayer).textContent = 'Winner!';
+       //when someone won, hide the dice and the red dot
+       document.querySelector('.dice').style.display = 'none';
+       document.querySelector('.player-' + activePlayer + '-panel').classList.add('winner');
+       document.querySelector('.player-' + activePlayer + '-panel').classList.remove('active');
+       gamePlaying = false; 
+    } else {
+        //Next player
+        nextPlayer();
+    }
+    }
+    
+    
+});
+
+function nextPlayer() {
+    //Next player
+    activePlayer === 0 ? activePlayer = 1: activePlayer = 0;
+    roundScore = 0;
+
+    document.getElementById('current-0').textContent ='0';
+    document.getElementById('current-1').textContent ='0';
+    //red dot & box color change while player change 
+    document.querySelector('.player-0-panel').classList.toggle('active');
+    document.querySelector('.player-1-panel').classList.toggle('active');
+    //hide the dice before throwing
+    document.querySelector('.dice').style.display = 'none';
+}
+
+document.querySelector('.btn-new').addEventListener('click', init);
+
+function init() {
+    scores = [0, 0];
+    roundScore = 0;
+    activePlayer = 0;
+    gamePlaying = true;
+//利用修改html的方式把骰子移走
+document.querySelector('.dice').style.display = 'none';
+//將雙方原始分數預設為0
+document.getElementById('score-0').textContent = '0';
+document.getElementById('score-1').textContent = '0';
+document.getElementById('current-0').textContent = '0';
+document.getElementById('current-1').textContent = '0';
+document.getElementById('name-0').textContent = "Player 1";
+document.getElementById('name-1').textContent = "Player 2";
+document.querySelector('.player-0-panel').classList.remove('winner');
+document.querySelector('.player-1-panel').classList.remove('winner');
+document.querySelector('.player-0-panel').classList.remove('active');
+document.querySelector('.player-1-panel').classList.remove('active');
+document.querySelector('.player-0-panel').classList.add('active');
+
+}
+
+
+
+
+
+
+//var x = document.querySelector('#score-0').textContent;
+//console.log(x); 
